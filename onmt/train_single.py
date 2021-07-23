@@ -52,7 +52,21 @@ def _build_train_iter(opt, fields, transforms_cls, stride=1, offset=0):
         stride=stride, offset=offset)
     return train_iter
 
+def validate(opt, fields, transforms_cls, checkpoint, device_id,
+         batch_queue=None, semaphore=None):
+    """only for validate, do not update model's parameters 纯验证方法"""
+    configure_process(opt, device_id)
+    init_logger(opt.log_file)
 
+    model_opt = _get_model_opts(opt, checkpoint=checkpoint)
+
+    # Build model.
+    model = build_model(model_opt, opt, fields, checkpoint)
+    model.count_parameters(log=logger.info)
+    valid_iter = _build_valid_iter(opt, fields, transforms_cls)
+    trainer = build_trainer(
+        opt, device_id, model, fields, optim=None, model_saver=None)
+    trainer.validate(valid_iter)
 def main(opt, fields, transforms_cls, checkpoint, device_id,
          batch_queue=None, semaphore=None):
     """Start training on `device_id`."""

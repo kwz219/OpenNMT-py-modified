@@ -1,12 +1,10 @@
 """ Implementation of all available options """
 import configargparse
-
 from onmt.models.sru import CheckSRU
 from onmt.transforms import AVAILABLE_TRANSFORMS
 from onmt.constants import ModelTask
 from onmt.modules.position_ffn import ACTIVATION_FUNCTIONS
 from onmt.modules.position_ffn import ActivationFunction
-
 
 def config_opts(parser):
     group = parser.add_argument_group("Configuration")
@@ -468,6 +466,8 @@ def _add_train_general_opts(parser):
     group.add('--train_from', '-train_from', default='', type=str,
               help="If training from a checkpoint then this is the "
                    "path to the pretrained model's state_dict.")
+    group.add('--validate_from', '-validate_from', default='', type=str,
+              help="validate a model from given path")
     group.add('--reset_optim', '-reset_optim', default='none',
               choices=['none', 'all', 'states', 'keep_states'],
               help="Optimization resetter when train_from.")
