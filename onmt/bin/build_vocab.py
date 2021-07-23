@@ -1,5 +1,8 @@
 #!/usr/bin/env python
-"""Get vocabulary coutings from transformed corpora samples."""
+"""
+Get vocabulary coutings from transformed corpora samples.
+从源文件构建开始构建Vocab和indices
+"""
 from onmt.utils.logging import init_logger
 from onmt.utils.misc import set_random_seed, check_path
 from onmt.utils.parse import ArgumentParser
@@ -68,3 +71,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+    #python build_vocab.py -config config.yaml -n_samples -1(默认是5000，只会在5000行采样，需要调成-1对在所有数据上构建vocab)

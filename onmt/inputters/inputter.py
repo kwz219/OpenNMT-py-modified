@@ -136,7 +136,7 @@ def get_fields(
         eos (str): Special end of sequence symbol. Only relevant
             for tgt.
         dynamic_dict (bool): Whether or not to include source map and
-            alignment fields.
+            alignment fields. 还不清楚这是干嘛的
         with_align (bool): Whether or not to include word align.
         src_truncate: Cut off src sequences beyond this (passed to
             ``src_data_type``'s data reader - see there for more details).

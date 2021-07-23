@@ -24,7 +24,7 @@ from onmt.transforms import make_transforms, save_transforms, \
 # Set sharing strategy manually instead of default based on the OS.
 torch.multiprocessing.set_sharing_strategy('file_system')
 
-
+"从源文件开始构建field格式的数据"
 def prepare_fields_transforms(opt):
     """Prepare or dump fields & transforms before training."""
     transforms_cls = get_transforms_cls(opt._all_transform)
@@ -53,6 +53,7 @@ def prepare_fields_transforms(opt):
     return fields, transforms_cls
 
 
+"训练初始化"
 def _init_train(opt):
     """Common initilization stuff for all training process."""
     ArgumentParser.validate_prepare_opts(opt)
@@ -80,6 +81,7 @@ def _init_train(opt):
             fields, transforms_cls = prepare_fields_transforms(opt)
     else:
         checkpoint = None
+        #数据预处理准备阶段，目的是将数据处理成torchtext.field格式
         fields, transforms_cls = prepare_fields_transforms(opt)
 
     # Report src and tgt vocab sizes
@@ -96,6 +98,7 @@ def _init_train(opt):
 
 
 def train(opt):
+    #初始化logger，验证参数是否正确
     init_logger(opt.log_file)
     ArgumentParser.validate_train_opts(opt)
     ArgumentParser.update_model_opts(opt)
@@ -103,7 +106,10 @@ def train(opt):
 
     set_random_seed(opt.seed, False)
 
+    #数据预处理
     checkpoint, fields, transforms_cls = _init_train(opt)
+
+    #调用single_main函数(单gpu上训练叫single),参数是fields,transforms_cls,和checkpoint(如果不是从头开始训练的)
     train_process = partial(
         single_main,
         fields=fields,
@@ -166,6 +172,7 @@ def _get_parser():
 
 
 def main():
+    #从命令行调用
     parser = _get_parser()
     opt, unknown = parser.parse_known_args()
     train(opt)
