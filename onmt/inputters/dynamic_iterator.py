@@ -4,7 +4,7 @@ from itertools import cycle
 from torchtext.data import batch as torchtext_batch
 from onmt.inputters import str2sortkey, max_tok_len, OrderedIterator
 from onmt.inputters.corpus import get_corpora, build_corpora_iters,\
-    DatasetAdapter
+    DatasetAdapter,get_valid_corpora
 from onmt.transforms import make_transforms
 from onmt.utils.logging import logger
 
@@ -201,10 +201,14 @@ def build_dynamic_dataset_iter(fields, transforms_cls, opts, is_train=True,
                                stride=1, offset=0):
     """Build `DynamicDatasetIter` from fields & opts."""
     transforms = make_transforms(opts, transforms_cls, fields)
-    corpora = get_corpora(opts, is_train)
+    if opts.validate_from != None:
+        corpora=get_valid_corpora(opts)
+    else:
+        corpora = get_corpora(opts, is_train)
     if corpora is None:
         assert not is_train, "only valid corpus is ignorable."
         return None
     return DynamicDatasetIter.from_opts(
         corpora, transforms, fields, opts, is_train,
         stride=stride, offset=offset)
+

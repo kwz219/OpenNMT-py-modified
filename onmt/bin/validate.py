@@ -24,7 +24,7 @@ def _init_validate(opt):
 
     checkpoint = load_checkpoint(ckpt_path=opt.validate_from)
     fields=load_fields(opt.save_data,checkpoint)
-    transforms_cls = get_transforms_cls(opt._all_transform)
+    transforms_cls = None
     for side in ['src', 'tgt']:
         f = fields[side]
         try:

@@ -162,6 +162,13 @@ def get_corpora(opts, is_train=False):
             return None
     return corpora_dict
 
+"only return validation set for model validation"
+def get_valid_corpora(opts):
+    corpora_dict = {}
+    src=opts.data+"/sample/corpus.sample.src"
+    tgt=opts.data+"/sample/corpus.sample.tgt"
+    corpora_dict["valid"]=ParallelCorpus(CorpusName.VALID,src=src,tgt=tgt)
+    return corpora_dict
 
 class ParallelCorpusIterator(object):
     """An iterator dedicate for ParallelCorpus.
