@@ -1,4 +1,5 @@
 """Module that contain iterator used for dynamic data."""
+import ast
 from itertools import cycle
 
 from torchtext.data import batch as torchtext_batch
@@ -144,8 +145,10 @@ class DynamicDatasetIter(object):
             batch_size_multiple = opts.batch_size_multiple
         else:
             batch_size_multiple = 8 if opts.model_dtype == "fp16" else 1
+        datadict = ast.literal_eval(opts.data)
+        datadict['valid']['weight']=1.0
         return cls(
-            corpora, opts.data, transforms, fields, is_train, opts.batch_type,
+            corpora, datadict, transforms, fields, is_train, opts.batch_type,
             batch_size, batch_size_multiple, data_type=opts.data_type,
             bucket_size=opts.bucket_size, pool_factor=opts.pool_factor,
             skip_empty_level=opts.skip_empty_level,

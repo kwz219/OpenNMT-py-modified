@@ -11,7 +11,7 @@ from collections import Counter
 from contextlib import contextmanager
 
 import multiprocessing as mp
-
+import ast
 
 @contextmanager
 def exfile_open(filename, *args, **kwargs):
@@ -165,9 +165,11 @@ def get_corpora(opts, is_train=False):
 "only return validation set for model validation"
 def get_valid_corpora(opts):
     corpora_dict = {}
-    src=opts.data+"/sample/corpus.sample.src"
-    tgt=opts.data+"/sample/corpus.sample.tgt"
-    corpora_dict["valid"]=ParallelCorpus(CorpusName.VALID,src=src,tgt=tgt)
+    datadict=ast.literal_eval(opts.data)
+    corpora_dict[CorpusName.VALID]=ParallelCorpus(CorpusName.VALID,
+                datadict[CorpusName.VALID]["path_src"],
+                datadict[CorpusName.VALID]["path_tgt"],
+                datadict[CorpusName.VALID]["path_align"])
     return corpora_dict
 
 class ParallelCorpusIterator(object):

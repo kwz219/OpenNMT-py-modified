@@ -312,7 +312,6 @@ class Trainer(object):
                 src, src_lengths = batch.src if isinstance(batch.src, tuple) \
                     else (batch.src, None)
                 tgt = batch.tgt
-
                 with torch.cuda.amp.autocast(enabled=self.optim.amp):
                     # F-prop through the model.
                     outputs, attns = valid_model(src, tgt, src_lengths,

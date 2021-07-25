@@ -63,9 +63,12 @@ def validate(opt, fields, transforms_cls, checkpoint, device_id,
     # Build model.
     model = build_model(model_opt, opt, fields, checkpoint)
     model.count_parameters(log=logger.info)
+    optim = Optimizer.from_opt(model, opt, checkpoint=checkpoint)
     valid_iter = _build_valid_iter(opt, fields, transforms_cls)
+    if valid_iter is not None:
+        valid_iter = IterOnDevice(valid_iter, device_id)
     trainer = build_trainer(
-        opt, device_id, model, fields, optim=None, model_saver=None)
+        opt, device_id, model, fields, optim, model_saver=None)
     trainer.validate(valid_iter)
 def main(opt, fields, transforms_cls, checkpoint, device_id,
          batch_queue=None, semaphore=None):
