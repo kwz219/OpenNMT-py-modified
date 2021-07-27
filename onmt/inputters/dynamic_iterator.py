@@ -145,10 +145,18 @@ class DynamicDatasetIter(object):
             batch_size_multiple = opts.batch_size_multiple
         else:
             batch_size_multiple = 8 if opts.model_dtype == "fp16" else 1
-        datadict = ast.literal_eval(opts.data)
-        datadict['valid']['weight']=1.0
+        if len(opts.validate_from) >2:
+            datadict = ast.literal_eval(opts.data)
+            datadict['valid']['weight']=1.0
+            return cls(
+                corpora, datadict, transforms, fields, is_train, opts.batch_type,
+                batch_size, batch_size_multiple, data_type=opts.data_type,
+                bucket_size=opts.bucket_size, pool_factor=opts.pool_factor,
+                skip_empty_level=opts.skip_empty_level,
+                stride=stride, offset=offset
+            )
         return cls(
-            corpora, datadict, transforms, fields, is_train, opts.batch_type,
+            corpora, opts.data, transforms, fields, is_train, opts.batch_type,
             batch_size, batch_size_multiple, data_type=opts.data_type,
             bucket_size=opts.bucket_size, pool_factor=opts.pool_factor,
             skip_empty_level=opts.skip_empty_level,
@@ -204,7 +212,7 @@ def build_dynamic_dataset_iter(fields, transforms_cls, opts, is_train=True,
                                stride=1, offset=0):
     """Build `DynamicDatasetIter` from fields & opts."""
     transforms = make_transforms(opts, transforms_cls, fields)
-    if opts.validate_from != None:
+    if len(opts.validate_from) > 2:
         corpora=get_valid_corpora(opts)
     else:
         corpora = get_corpora(opts, is_train)
