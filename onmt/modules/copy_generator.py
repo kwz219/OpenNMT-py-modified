@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-
 from onmt.utils.misc import aeq
 from onmt.utils.loss import CommonLossCompute
 
@@ -47,13 +46,13 @@ class CopyGenerator(nn.Module):
     directly from the source sequence.
 
     The copy generator is an extended version of the standard
-    generator that computes three values.
+    generator that computes three values. 在原来的基础上增加了一个对source中各个词的概率分布
 
-    * :math:`p_{softmax}` the standard softmax over `tgt_dict`
+    * :math:`p_{softmax}` the standard softmax over `tgt_dict` 在tgt_vocab上的概率分布
     * :math:`p(z)` the probability of copying a word from
-      the source
+      the source 在source sentence上的各个词的概率分布
     * :math:`p_{copy}` the probility of copying a particular word.
-      taken from the attention distribution directly.
+      taken from the attention distribution directly. 从attention score中copy一个词的概率分布
 
     The model returns a distribution over the extend dictionary,
     computed as
@@ -96,7 +95,7 @@ class CopyGenerator(nn.Module):
         """
         Compute a distribution over the target dictionary
         extended by the dynamic dictionary implied by copying
-        source words.
+        source words. 在目标词典上的概率分布和在源句子上的概率分布
 
         Args:
            hidden (FloatTensor): hidden outputs ``(batch x tlen, input_size)``
@@ -119,6 +118,7 @@ class CopyGenerator(nn.Module):
         logits[:, self.pad_idx] = -float('inf')
         prob = torch.softmax(logits, 1)
 
+        # 选择是否采用copy机制
         # Probability of copying p(z=1) batch.
         p_copy = torch.sigmoid(self.linear_copy(hidden))
         # Probability of not copying: p_{word}(w) * (1 - p(z))
