@@ -118,8 +118,10 @@ def train(opt):
 
     nb_gpu = len(opt.gpu_ranks)
 
+    #如果采用多GPU进行训练
     if opt.world_size > 1:
-
+        import os
+        os.environ["NCCL_DEBUG"]="INFO"
         queues = []
         mp = torch.multiprocessing.get_context('spawn')
         semaphore = mp.Semaphore(opt.world_size * opt.queue_size)
