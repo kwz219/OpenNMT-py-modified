@@ -162,3 +162,14 @@ class LanguageModel(BaseModel):
             log("decoder: {}".format(dec))
             log("* number of parameters: {}".format(enc + dec))
         return enc, dec
+
+class ClassifyModel(BaseModel):
+    """
+    added by zwk, Model for Classify Task
+    """
+    def __init__(self,encoder=None,decoder=None):
+        super(ClassifyModel, self).__init__()
+        if encoder is not None:
+            raise ValueError("Classify Model should not be used"
+                             "with an encoder")
+        self.decoder=decoder

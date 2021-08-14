@@ -137,7 +137,7 @@ def build_decoder_with_embeddings(
     decoder = build_decoder(model_opt, tgt_emb)
     return decoder, tgt_emb
 
-
+#modified by zwk
 def build_task_specific_model(model_opt, fields):
     # Share the embedding matrix - preprocess with share_vocab required.
     if model_opt.share_embeddings:
@@ -161,6 +161,8 @@ def build_task_specific_model(model_opt, fields):
             model_opt, fields, share_embeddings=True, src_emb=src_emb
         )
         return onmt.models.LanguageModel(decoder=decoder)
+    elif model_opt.model_task == ModelTask.CLASSIFY:
+        encoder, src_emb = build_encoder_with_embeddings(model_opt, fields)
     else:
         raise ValueError(f"No model defined for {model_opt.model_task} task")
 
