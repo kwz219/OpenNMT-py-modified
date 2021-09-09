@@ -163,13 +163,25 @@ class LanguageModel(BaseModel):
             log("* number of parameters: {}".format(enc + dec))
         return enc, dec
 
-class ClassifyModel(BaseModel):
+class TokenCLSModel(BaseModel):
     """
     added by zwk, Model for Classify Task
     """
-    def __init__(self,encoder=None,decoder=None):
-        super(ClassifyModel, self).__init__()
-        if encoder is not None:
-            raise ValueError("Classify Model should not be used"
-                             "with an encoder")
-        self.decoder=decoder
+    def __init__(self,opt,NMTmodel,encoder=None,decoder=None):
+        super(TokenCLSModel, self).__init__()
+        self.NMTmodel=NMTmodel
+        self.fc = nn.Linear(opt.dim, opt.dim)
+        self.activ = nn.Tanh()
+        self.drop = nn.Dropout(opt.p_drop_hidden)
+        self.classifier = nn.Linear(opt.dim, opt.n_labels)
+    def forward(self, src, tgt, lengths, bptt=False, with_align=False):
+        dec_in = tgt[:-1]  # exclude last target from inputs
+
+        enc_state, memory_bank, lengths = self.encoder(src, lengths)
+
+        if not bptt:
+            self.decoder.init_state(src, memory_bank, enc_state)
+        dec_out, attns = self.decoder(dec_in, memory_bank,
+                                      memory_lengths=lengths,
+                                      with_align=with_align)
+        return dec_out, attns
